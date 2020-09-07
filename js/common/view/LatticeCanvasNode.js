@@ -10,11 +10,11 @@ import Vector2 from '../../../../dot/js/Vector2.js';
 import merge from '../../../../phet-core/js/merge.js';
 import CanvasNode from '../../../../scenery/js/nodes/CanvasNode.js';
 import Color from '../../../../scenery/js/util/Color.js';
-import sound from '../../sound.js';
-import SoundConstants from '../../common/SoundConstants.js';
+import ImageDataRenderer from '../../../../wave-interference/js/common/view/ImageDataRenderer.js';
 import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
 import WaveInterferenceUtils from '../../../../wave-interference/js/common/WaveInterferenceUtils.js';
-import ImageDataRenderer from '../../../../wave-interference/js/common/view/ImageDataRenderer.js';
+import SoundConstants from '../../common/SoundConstants.js';
+import sound from '../../sound.js';
 
 // constants
 const CUTOFF = 0.4;

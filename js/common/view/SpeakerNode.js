@@ -4,10 +4,9 @@
  * Node for the speaker, oscillates with the values of the oscillatorProperty.
  */
 
-import Node from '../../../../scenery/js/nodes/Node.js';
-import SoundConstants from '../../common/SoundConstants.js';
-import sound from '../../sound.js';
 import Utils from '../../../../dot/js/Utils.js';
+import Image from '../../../../scenery/js/nodes/Image.js';
+import Node from '../../../../scenery/js/nodes/Node.js';
 import speakerL10Image from '../../../../wave-interference/images/speaker/speaker_L10_png.js';
 import speakerL1Image from '../../../../wave-interference/images/speaker/speaker_L1_png.js';
 import speakerL2Image from '../../../../wave-interference/images/speaker/speaker_L2_png.js';
@@ -29,7 +28,8 @@ import speakerR6Image from '../../../../wave-interference/images/speaker/speaker
 import speakerR7Image from '../../../../wave-interference/images/speaker/speaker_R7_png.js';
 import speakerR8Image from '../../../../wave-interference/images/speaker/speaker_R8_png.js';
 import speakerR9Image from '../../../../wave-interference/images/speaker/speaker_R9_png.js';
-import Image from '../../../../scenery/js/nodes/Image.js';
+import SoundConstants from '../../common/SoundConstants.js';
+import sound from '../../sound.js';
 
 // variables
 const speakers = [

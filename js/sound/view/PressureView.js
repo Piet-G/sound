@@ -5,13 +5,13 @@
  * View for the pressure screen.
  */
 
-import SoundScreenView from './SoundScreenView.js';
-import sound from '../../sound.js';
-import PressureModel from '../model/PressureModel.js';
 import Image from '../../../../scenery/js/nodes/Image.js';
 import listenerImage from '../../../images/girl_png.js';
 import SoundConstants from '../../common/SoundConstants.js';
 import AirDensityControlPanel from '../../common/view/AirDensityControlPanel.js';
+import sound from '../../sound.js';
+import PressureModel from '../model/PressureModel.js';
+import SoundScreenView from './SoundScreenView.js';
 
 class PressureView extends SoundScreenView {
   constructor(model) {

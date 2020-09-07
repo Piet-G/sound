@@ -5,13 +5,13 @@
  * Model for the single source scene.
  */
 
-import SoundModel from './SoundModel.js';
-import Property from '../../../../axon/js/Property.js';
-import sound from '../../sound.js';
-import Vector2 from '../../../../dot/js/Vector2.js';
 import BooleanProperty from '../../../../axon/js/BooleanProperty.js';
+import Property from '../../../../axon/js/Property.js';
+import Vector2 from '../../../../dot/js/Vector2.js';
 import Vector2Property from '../../../../dot/js/Vector2Property.js';
 import SoundConstants from '../../common/SoundConstants.js';
+import sound from '../../sound.js';
+import SoundModel from './SoundModel.js';
 
 class SingleSourceModel extends SoundModel {
   constructor() {

@@ -5,18 +5,18 @@
  * View for the measure screen.
  */
 
-import SoundScreenView from './SoundScreenView.js';
-import sound from '../../sound.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
-import MeasureModel from '../model/MeasureModel.js';
-import StopwatchNode from '../../../../scenery-phet/js/StopwatchNode.js';
 import ModelViewTransform2 from '../../../../phetcommon/js/view/ModelViewTransform2.js';
-import MovableNode from '../../common/view/MovableNode.js';
 import RulerNode from '../../../../scenery-phet/js/RulerNode.js';
+import StopwatchNode from '../../../../scenery-phet/js/StopwatchNode.js';
 import SoundClip from '../../../../tambo/js/sound-generators/SoundClip.js';
 import soundManager from '../../../../tambo/js/soundManager.js';
 import commonGrabSound from '../../../../tambo/sounds/grab_mp3.js';
 import commonReleaseSound from '../../../../tambo/sounds/release_mp3.js';
+import MovableNode from '../../common/view/MovableNode.js';
+import sound from '../../sound.js';
+import MeasureModel from '../model/MeasureModel.js';
+import SoundScreenView from './SoundScreenView.js';
 
 class MeasureView extends SoundScreenView {
   constructor(model) {

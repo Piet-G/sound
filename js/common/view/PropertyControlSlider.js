@@ -4,12 +4,12 @@
  * Slider that controls a given property, can display the current value and a title.
  */
 
+import merge from '../../../../phet-core/js/merge.js';
 import Node from '../../../../scenery/js/nodes/Node.js';
-import sound from '../../sound.js';
+import Text from '../../../../scenery/js/nodes/Text.js';
 import WaveInterferenceUtils from '../../../../wave-interference/js/common/WaveInterferenceUtils.js';
 import SoundSlider from '../../common/view/SoundSlider.js';
-import Text from '../../../../scenery/js/nodes/Text.js';
-import merge from '../../../../phet-core/js/merge.js';
+import sound from '../../sound.js';
 
 class ProtertyControlSlider extends Node {
   constructor(titleText, property, options) {

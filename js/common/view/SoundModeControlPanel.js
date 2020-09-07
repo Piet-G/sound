@@ -4,17 +4,17 @@
  * Controls for the sound mode, whether the speaker emits waves contiously or pulse on button press.
  */
 
+import merge from '../../../../phet-core/js/merge.js';
 import Node from '../../../../scenery/js/nodes/Node.js';
 import Text from '../../../../scenery/js/nodes/Text.js';
-import VerticalAquaRadioButtonGroup from '../../../../sun/js/VerticalAquaRadioButtonGroup.js';
-import soundStrings from '../../soundStrings.js';
-import sound from '../../sound.js';
-import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
-import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
 import RectangularPushButton from '../../../../sun/js/buttons/RectangularPushButton.js';
-import SoundModel from '../../sound/model/SoundModel.js';
+import VerticalAquaRadioButtonGroup from '../../../../sun/js/VerticalAquaRadioButtonGroup.js';
+import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
+import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
 import SoundConstants from '../../common/SoundConstants.js';
-import merge from '../../../../phet-core/js/merge.js';
+import sound from '../../sound.js';
+import SoundModel from '../../sound/model/SoundModel.js';
+import soundStrings from '../../soundStrings.js';
 
 const titleString = soundStrings.soundModeControlPanel.title;
 const continuousOptionString = soundStrings.soundModeControlPanel.continuous;

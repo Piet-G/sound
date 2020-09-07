@@ -4,27 +4,26 @@
  * @author Piet Goris
  * Base view for the screens.
  */
-import ScreenView from '../../../../joist/js/ScreenView.js';
-import Color from '../../../../scenery/js/util/Color.js';
-
-import ResetAllButton from '../../../../scenery-phet/js/buttons/ResetAllButton.js';
-import SoundConstants from '../../common/SoundConstants.js';
-import SoundControlPanel from '../../common/view/SoundControlPanel.js';
-import AudioControlPanel from '../../common/view/AudioControlPanel.js';
-import AlignGroup from '../../../../scenery/js/nodes/AlignGroup.js';
-import sound from '../../sound.js';
-import SoundModel from '../model/SoundModel.js';
-import SpeakerNode from '../../common/view/SpeakerNode.js';
-import GaugeNode from '../../../../scenery-phet/js/GaugeNode.js';
 import NumberProperty from '../../../../axon/js/NumberProperty.js';
-import LatticeCanvasNode from '../../common/view/LatticeCanvasNode.js';
-import WaveAreaNode from '../../../../wave-interference/js/common/view/WaveAreaNode.js';
-import TimeControlNode from '../../../../scenery-phet/js/TimeControlNode.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
+import ScreenView from '../../../../joist/js/ScreenView.js';
+import ResetAllButton from '../../../../scenery-phet/js/buttons/ResetAllButton.js';
+import GaugeNode from '../../../../scenery-phet/js/GaugeNode.js';
+import TimeControlNode from '../../../../scenery-phet/js/TimeControlNode.js';
+import AlignGroup from '../../../../scenery/js/nodes/AlignGroup.js';
 import Rectangle from '../../../../scenery/js/nodes/Rectangle.js';
+import Color from '../../../../scenery/js/util/Color.js';
 import soundManager from '../../../../tambo/js/soundManager.js';
+import WaveAreaNode from '../../../../wave-interference/js/common/view/WaveAreaNode.js';
 import SineWaveGenerator from '../../../../wave-interference/js/waves/view/SineWaveGenerator.js';
+import SoundConstants from '../../common/SoundConstants.js';
+import AudioControlPanel from '../../common/view/AudioControlPanel.js';
+import LatticeCanvasNode from '../../common/view/LatticeCanvasNode.js';
+import SoundControlPanel from '../../common/view/SoundControlPanel.js';
+import SpeakerNode from '../../common/view/SpeakerNode.js';
+import sound from '../../sound.js';
 import soundStrings from '../../soundStrings.js';
+import SoundModel from '../model/SoundModel.js';
 
 // constants
 const WAVE_MARGIN = 8; // Additional margin shown around the wave lattice

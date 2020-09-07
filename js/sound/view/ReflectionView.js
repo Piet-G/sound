@@ -5,15 +5,15 @@
  * View for the reflection screen.
  */
 
-import SoundScreenView from './SoundScreenView.js';
-import sound from '../../sound.js';
-import ReflectionModel from '../model/SingleSourceModel.js';
-import ReflectionControlPanel from '../../common/view/ReflectionControlPanel.js';
-import SoundModeControlPanel from '../../common/view/SoundModeControlPanel.js';
-import Rectangle from '../../../../scenery/js/nodes/Rectangle.js';
 import Shape from '../../../../kite/js/Shape.js';
 import Node from '../../../../scenery/js/nodes/Node.js';
+import Rectangle from '../../../../scenery/js/nodes/Rectangle.js';
 import SoundConstants from '../../common/SoundConstants.js';
+import ReflectionControlPanel from '../../common/view/ReflectionControlPanel.js';
+import SoundModeControlPanel from '../../common/view/SoundModeControlPanel.js';
+import sound from '../../sound.js';
+import ReflectionModel from '../model/SingleSourceModel.js';
+import SoundScreenView from './SoundScreenView.js';
 
 class ReflectionView extends SoundScreenView {
   constructor(model) {

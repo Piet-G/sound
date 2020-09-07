@@ -5,15 +5,15 @@
  * View for the single source view.
  */
 
-import SoundScreenView from './SoundScreenView.js';
-import sound from '../../sound.js';
 import Bounds2 from '../../../../dot/js/Bounds2.js';
-import SingleSourceModel from '../model/SingleSourceModel.js';
+import Vector2 from '../../../../dot/js/Vector2.js';
 import Image from '../../../../scenery/js/nodes/Image.js';
 import listenerImage from '../../../images/girl_png.js';
-import MovableNode from '../../common/view/MovableNode.js';
-import Vector2 from '../../../../dot/js/Vector2.js';
 import SoundConstants from '../../common/SoundConstants.js';
+import MovableNode from '../../common/view/MovableNode.js';
+import sound from '../../sound.js';
+import SingleSourceModel from '../model/SingleSourceModel.js';
+import SoundScreenView from './SoundScreenView.js';
 
 class SingleSourceView extends SoundScreenView {
   constructor(model) {

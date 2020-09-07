@@ -5,17 +5,16 @@
  * View for the two source screen.
  */
 
-import SoundScreenView from './SoundScreenView.js';
-import sound from '../../sound.js';
 import Bounds2 from '../../../../dot/js/Bounds2.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
-import TwoSourceModel from '../model/TwoSourceModel.js';
-import SpeakerNode from '../../common/view/SpeakerNode.js';
-import MovableNode from '../../common/view/MovableNode.js';
-import SoundConstants from '../../common/SoundConstants.js';
-import listenerImage from '../../../images/girl_png.js';
 import Image from '../../../../scenery/js/nodes/Image.js';
-
+import listenerImage from '../../../images/girl_png.js';
+import SoundConstants from '../../common/SoundConstants.js';
+import MovableNode from '../../common/view/MovableNode.js';
+import SpeakerNode from '../../common/view/SpeakerNode.js';
+import sound from '../../sound.js';
+import TwoSourceModel from '../model/TwoSourceModel.js';
+import SoundScreenView from './SoundScreenView.js';
 
 class TwoSourceView extends SoundScreenView {
   constructor(model) {

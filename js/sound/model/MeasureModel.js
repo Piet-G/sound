@@ -5,12 +5,12 @@
  * Model for the measure screen.
  */
 
-import SoundModel from './SoundModel.js';
+import Range from '../../../../dot/js/Range.js';
+import Vector2 from '../../../../dot/js/Vector2.js';
+import Vector2Property from '../../../../dot/js/Vector2Property.js';
 import Stopwatch from '../../../../scenery-phet/js/Stopwatch.js';
 import sound from '../../sound.js';
-import Vector2 from '../../../../dot/js/Vector2.js';
-import Range from '../../../../dot/js/Range.js';
-import Vector2Property from '../../../../dot/js/Vector2Property.js';
+import SoundModel from './SoundModel.js';
 
 class MeasureModel extends SoundModel {
   constructor() {

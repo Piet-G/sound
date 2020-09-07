@@ -4,17 +4,17 @@
  * Shows the controls of the audio, wheter the audio is enabled and if the source is sampled at the source or at the listener.
  */
 
+import merge from '../../../../phet-core/js/merge.js';
 import Node from '../../../../scenery/js/nodes/Node.js';
 import Text from '../../../../scenery/js/nodes/Text.js';
-import VerticalAquaRadioButtonGroup from '../../../../sun/js/VerticalAquaRadioButtonGroup.js';
-import soundStrings from '../../soundStrings.js';
-import sound from '../../sound.js';
-import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
-import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
 import Checkbox from '../../../../sun/js/Checkbox.js';
-import SoundModel from '../../sound/model/SoundModel.js';
+import VerticalAquaRadioButtonGroup from '../../../../sun/js/VerticalAquaRadioButtonGroup.js';
+import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
+import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
 import SoundConstants from '../../common/SoundConstants.js';
-import merge from '../../../../phet-core/js/merge.js';
+import sound from '../../sound.js';
+import SoundModel from '../../sound/model/SoundModel.js';
+import soundStrings from '../../soundStrings.js';
 
 const titleString = soundStrings.audioControlPanel.title;
 const audioEnabledString = soundStrings.audioControlPanel.audioEnabled;

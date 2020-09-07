@@ -7,10 +7,9 @@
  *
  */
 
-import sound from '../../sound.js';
 import Lattice from '../../../../wave-interference/js/common/model/Lattice.js';
 import SoundConstants from '../../common/SoundConstants.js';
-
+import sound from '../../sound.js';
 
 class TemporalMask {
 

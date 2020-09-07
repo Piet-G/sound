@@ -5,13 +5,12 @@
  * Model for the twe source screen.
  */
 
-import SoundModel from './SoundModel.js';
-import SoundConstants from '../../common/SoundConstants.js';
-import sound from '../../sound.js';
+import BooleanProperty from '../../../../axon/js/BooleanProperty.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
 import Vector2Property from '../../../../dot/js/Vector2Property.js';
-import BooleanProperty from '../../../../axon/js/BooleanProperty.js';
-
+import SoundConstants from '../../common/SoundConstants.js';
+import sound from '../../sound.js';
+import SoundModel from './SoundModel.js';
 
 class TwoSourceModel extends SoundModel {
   constructor() {

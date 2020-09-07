@@ -5,11 +5,11 @@
  * Screen for the sound application
  */
 
-import Screen from '../../../joist/js/Screen.js';
-import SoundColors from '../common/SoundColors.js';
-import ScreenIcon from '../../../joist/js/ScreenIcon.js';
-import sound from '../sound.js';
 import Dimension2 from '../../../dot/js/Dimension2.js';
+import Screen from '../../../joist/js/Screen.js';
+import ScreenIcon from '../../../joist/js/ScreenIcon.js';
+import SoundColors from '../common/SoundColors.js';
+import sound from '../sound.js';
 
 class SoundScreen extends Screen {
   constructor(title, createModel, createView, iconImage) {

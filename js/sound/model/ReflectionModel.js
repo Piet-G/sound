@@ -5,12 +5,12 @@
  * Model for the reflection screen.
  */
 
-import SoundModel from './SoundModel.js';
-import SoundConstants from '../../common/SoundConstants.js';
-import sound from '../../sound.js';
 import NumberProperty from '../../../../axon/js/NumberProperty.js';
 import Property from '../../../../axon/js/Property.js';
 import Range from '../../../../dot/js/Range.js';
+import SoundConstants from '../../common/SoundConstants.js';
+import sound from '../../sound.js';
+import SoundModel from './SoundModel.js';
 
 class ReflectionModel extends SoundModel {
   constructor() {

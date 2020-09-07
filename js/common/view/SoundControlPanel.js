@@ -5,18 +5,18 @@
  * Also displays a clear wave button when in the measure model.
  */
 
+import Utils from '../../../../dot/js/Utils.js';
 import merge from '../../../../phet-core/js/merge.js';
 import Node from '../../../../scenery/js/nodes/Node.js';
 import Text from '../../../../scenery/js/nodes/Text.js';
-import HSeparator from '../../../../sun/js/HSeparator.js';
-import soundStrings from '../../soundStrings.js';
-import sound from '../../sound.js';
-import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
-import PropertyControlSlider from './PropertyControlSlider.js';
-import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
 import RectangularPushButton from '../../../../sun/js/buttons/RectangularPushButton.js';
+import HSeparator from '../../../../sun/js/HSeparator.js';
+import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
+import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
 import SoundConstants from '../../common/SoundConstants.js';
-import Utils from '../../../../dot/js/Utils.js';
+import sound from '../../sound.js';
+import soundStrings from '../../soundStrings.js';
+import PropertyControlSlider from './PropertyControlSlider.js';
 
 const amplitudeString = soundStrings.amplitude;
 const frequencyString = soundStrings.frequency;

@@ -7,20 +7,19 @@
 
 import BooleanProperty from '../../../../axon/js/BooleanProperty.js';
 import NumberProperty from '../../../../axon/js/NumberProperty.js';
-import Enumeration from '../../../../phet-core/js/Enumeration.js';
+import Bounds2 from '../../../../dot/js/Bounds2.js';
+import Range from '../../../../dot/js/Range.js';
 import Rectangle from '../../../../dot/js/Rectangle.js';
+import Vector2 from '../../../../dot/js/Vector2.js';
+import Enumeration from '../../../../phet-core/js/Enumeration.js';
+import EventTimer from '../../../../phet-core/js/EventTimer.js';
+import merge from '../../../../phet-core/js/merge.js';
 import ModelViewTransform2 from '../../../../phetcommon/js/view/ModelViewTransform2.js';
+import Lattice from '../../../../wave-interference/js/common/model/Lattice.js';
+import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
+import TemporalMask from '../../common/model/TemporalMask.js';
 import SoundConstants from '../../common/SoundConstants.js';
 import sound from '../../sound.js';
-import Bounds2 from '../../../../dot/js/Bounds2.js';
-import Vector2 from '../../../../dot/js/Vector2.js';
-import EventTimer from '../../../../phet-core/js/EventTimer.js';
-import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
-import Lattice from '../../../../wave-interference/js/common/model/Lattice.js';
-import TemporalMask from '../../common/model/TemporalMask.js';
-import Range from '../../../../dot/js/Range.js';
-import merge from '../../../../phet-core/js/merge.js';
-
 
 // This simulation uses EventTimer, which provides exactly the same model behavior on very slow and very fast
 // platforms.  Here we define the frequency of events in Hz, which has been tuned so that our slowest platform has

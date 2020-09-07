@@ -4,8 +4,8 @@
  * A node which can be dragged within the given bounds.
  */
 
-import Node from '../../../../scenery/js/nodes/Node.js';
 import MovableDragHandler from '../../../../scenery-phet/js/input/MovableDragHandler.js';
+import Node from '../../../../scenery/js/nodes/Node.js';
 import sound from '../../sound.js';
 
 class MoveableNode extends Node {
