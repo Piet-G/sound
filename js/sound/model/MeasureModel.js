@@ -20,7 +20,7 @@ class MeasureModel extends SoundModel {
 
     // @public {Stopwatch}
     this.stopwatch = new Stopwatch( {
-      position: new Vector2(100, 100),
+      position: new Vector2(450, 50),
       timePropertyOptions: {
         range: new Range( 0, 999.99 )
       },
@@ -28,7 +28,7 @@ class MeasureModel extends SoundModel {
      });
 
     // @public - position of the ruler
-    this.rulerPositionProperty = new Vector2Property( new Vector2(400, 400) );
+    this.rulerPositionProperty = new Vector2Property( new Vector2(200, 460 ));
   }
 
   /**
