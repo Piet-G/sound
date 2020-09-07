@@ -2,70 +2,57 @@
 
 /**
  * @author Piet Goris
+ * Base view for the screens.
  */
-import Vector2Property from '../../../../dot/js/Vector2Property.js';
 import ScreenView from '../../../../joist/js/ScreenView.js';
 import Color from '../../../../scenery/js/util/Color.js';
 
 import ResetAllButton from '../../../../scenery-phet/js/buttons/ResetAllButton.js';
-import Tandem from '../../../../tandem/js/Tandem.js';
 import SoundConstants from '../../common/SoundConstants.js';
-import SoundControlPanel from '../../common/SoundControlPanel.js';
-import AudioControlPanel from '../../common/AudioControlPanel.js';
-import SoundModeControlPanel from '../../common/SoundModeControlPanel.js';
+import SoundControlPanel from '../../common/view/SoundControlPanel.js';
+import AudioControlPanel from '../../common/view/AudioControlPanel.js';
 import AlignGroup from '../../../../scenery/js/nodes/AlignGroup.js';
 import sound from '../../sound.js';
 import SoundModel from '../model/SoundModel.js';
 import SpeakerNode from '../../common/view/SpeakerNode.js';
 import GaugeNode from '../../../../scenery-phet/js/GaugeNode.js';
-
-import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
+import NumberProperty from '../../../../axon/js/NumberProperty.js';
 import LatticeCanvasNode from '../../common/view/LatticeCanvasNode.js';
 import WaveAreaNode from '../../../../wave-interference/js/common/view/WaveAreaNode.js';
 import TimeControlNode from '../../../../scenery-phet/js/TimeControlNode.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
 import Rectangle from '../../../../scenery/js/nodes/Rectangle.js';
+import soundManager from '../../../../tambo/js/soundManager.js';
+import SineWaveGenerator from '../../../../wave-interference/js/waves/view/SineWaveGenerator.js';
+import soundStrings from '../../soundStrings.js';
 
 // constants
-const MARGIN = WaveInterferenceConstants.MARGIN;
-const SPACING = 6;
 const WAVE_MARGIN = 8; // Additional margin shown around the wave lattice
-//const MAJOR_TICK_WIDTH = 20; // in model coordinate frame
-//const WATER_BLUE = WaveInterferenceConstants.WATER_SIDE_COLOR;
 
 class SoundScreenView extends ScreenView {
 
   /**
    * @param {SoundModel} model
-   * @param {Tandem} tandem
    */
-  constructor( model, tandem ) {
+  constructor( model) {
     assert && assert( model instanceof SoundModel, 'invalid model' );
-    assert && assert( tandem instanceof Tandem, 'invalid tandem' );
 
-    super( {
-      tandem: tandem
-    } );
+    super();
 
     // @private - shows the background of the wave area for sound view and used for layout
     this.waveAreaNode = new WaveAreaNode( {
-        top: MARGIN + WAVE_MARGIN + 15,
+        top: SoundConstants.CONTROL_PANEL_MARGIN + WAVE_MARGIN + 15,
         centerX: this.layoutBounds.centerX - 142
       } );
+
     this.addChild( this.waveAreaNode );
 
-    const resetAllButton = new ResetAllButton( {
-      listener: () => {
-        this.interruptSubtreeInput(); // cancel interactions that may be in progress
-        model.reset();
-        this.reset();
-      },
-      right: this.layoutBounds.maxX - SoundConstants.SCREEN_VIEW_X_MARGIN,
-      bottom: this.layoutBounds.maxY - SoundConstants.SCREEN_VIEW_Y_MARGIN,
-      tandem: tandem.createTandem( 'resetAllButton' )
+    this.canvasNode = new LatticeCanvasNode( model.lattice, {
+      baseColor: Color.white,
+      hasReflection: model.hasReflection,
+      sourcePosition: new Vector2(SoundConstants.SOURCE_POSITION_X, Math.floor(model.modelToLatticeTransform.modelToViewY( model.speaker1Position.y ))),
+      hasSecondSource: model.hasSecondSource
     } );
-
-    this.canvasNode = new LatticeCanvasNode( model.lattice, model.lattice2, { baseColor: Color.white, reflection: typeof model.wallPositionXProperty !== 'undefined'} );
 
     const latticeScale = this.waveAreaNode.width / this.canvasNode.width;
     this.canvasNode.mutate( {
@@ -82,84 +69,98 @@ class SoundScreenView extends ScreenView {
 
     this.controlPanel = new SoundControlPanel(model, this.contolPanelAlignGroup);
 
-    const updateControlPanelPosition = () => {
-      this.controlPanel.mutate( {
-        right: this.layoutBounds.right - MARGIN,
-        top: 0 + SPACING
-      } );
-    };
-    updateControlPanelPosition();
+    this.controlPanel.mutate( {
+      right: this.layoutBounds.right - SoundConstants.CONTROL_PANEL_MARGIN,
+      top: SoundConstants.CONTROL_PANEL_MARGIN + SoundConstants.CONTROL_PANEL_SPACNG
+    } );
+    
     this.addChild(this.controlPanel);
 
     if(model.isAudioEnabledProperty){
       this.audioControlPanel = new AudioControlPanel(model, this.contolPanelAlignGroup);
 
-      const updateAudioControlPanelPosition = () => {
-        this.audioControlPanel.mutate( {
-          right: this.layoutBounds.right - MARGIN,
-          top: this.controlPanel.bottom + SPACING
-        } );
-      };
-      updateAudioControlPanelPosition();
+      this.audioControlPanel.mutate( {
+        right: this.layoutBounds.right - SoundConstants.CONTROL_PANEL_MARGIN,
+        top: this.controlPanel.bottom + SoundConstants.CONTROL_PANEL_SPACING
+      } );
+      
       this.addChild(this.audioControlPanel);
+
+      // Amplitude of the hearable tone
+      const soundAmpitudeProperty = new NumberProperty(0);
+
+      const updateSoundAmplitude = () => {
+        const amplitudeDampening = model.audioControlSettingProperty && model.audioControlSettingProperty.value === SoundModel.AudioControlOptions.LISTENER ? (SoundConstants.LISTENER_BOUNDS_X.max - model.listenerPositionProperty.value.x) / (SoundConstants.LISTENER_BOUNDS_X.max - SoundConstants.LISTENER_BOUNDS_X.min) : 1;
+        const pressureDampening = model.pressureProperty ? model.pressureProperty.value : 1;
+        soundAmpitudeProperty.set(model.amplitudeProperty.value / 1.5 * amplitudeDampening * pressureDampening);
+      };
+
+      model.amplitudeProperty.link(updateSoundAmplitude);
+
+      if(model.pressureProperty){
+        model.pressureProperty.link(updateSoundAmplitude);
+      }
+
+      if(model.audioControlSettingProperty){
+        model.audioControlSettingProperty.link(updateSoundAmplitude);
+        model.listenerPositionProperty.link(updateSoundAmplitude);
+      }
+
+      const sineWavePlayer = new SineWaveGenerator(
+        model.frequencyProperty,
+        soundAmpitudeProperty, {
+          enableControlProperties: [
+            model.isAudioEnabledProperty,
+            model.isRunningProperty
+          ]
+        });
+
+      // Suppress the tone when another screen is selected
+      soundManager.addSoundGenerator( sineWavePlayer, {
+        associatedViewNode: this
+      } );
     }
 
-
-    // @public
-    this.positionProperty = new Vector2Property( new Vector2(400, 400), {
-      //tandem: options.tandem.createTandem( 'positionProperty' )
-    } );
-
     model.setViewBounds( this.waveAreaNode.bounds );
-
-    // use the common ruler node
-    //const width = modelViewTransform.modelToViewDeltaX( model.ruler.length );
-    //const height = modelViewTransform.modelToViewDeltaY( model.ruler.height );
-    //const majorTickWidth = modelViewTransform.modelToViewDeltaX( MAJOR_TICK_WIDTH );
-    //this.modelViewTransform = ModelViewTransform2.createOffsetScaleMapping( new Vector2( 0, 0 ), 1 );
-
-    //const rulerNodeB = new BLLRulerNode( model.ruler, modelViewTransform, tandem.createTandem( 'rulerNode' ) );
-
-    //this.addChild( rulerNodeB);
 
     if(model.pressureProperty){
       const speakerCenter = model.modelViewTransform.modelToViewPosition(model.speaker1Position);
       const boxSizeX = 150;
       const boxSizeY = 200;
+
+      // Pressure box.
       const box = new Rectangle(speakerCenter.x - boxSizeX / 2, speakerCenter.y - boxSizeY / 2, boxSizeX, boxSizeY, {
         stroke: '#f3d99b',
         lineWidth: 3
       });
 
+      // Darken the pressure box in low pressures.
       model.pressureProperty.link( prop => {
         box.setFill(new Color(0,0,0, 1 - prop));
       });
 
       this.addChild(box);
 
-      const gauge = new GaugeNode(model.pressureProperty, "ATM", model.pressureProperty.range);
+      // Pressure gauge.
+      const gauge = new GaugeNode(model.pressureProperty, soundStrings.atm, model.pressureProperty.range);
       gauge.centerX = speakerCenter.x;
       gauge.scale(0.4);
       gauge.bottom = speakerCenter.y - boxSizeY / 2;
       this.addChild(gauge);
     }
 
+    // First speaker
     this.speakerNode1 = new SpeakerNode(model.oscillatorProperty);
-    console.log(model.speaker1Position);
     const viewPosition = model.modelViewTransform.modelToViewPosition( model.speaker1Position);
     viewPosition.setX(viewPosition.x + SoundConstants.SPEAKER_OFFSET);
     this.speakerNode1.setRightCenter(viewPosition);
     this.addChild(this.speakerNode1);
 
-    //this.addChild(new MovableNode(model.))
-      const timeControlNode = new TimeControlNode( model.isRunningProperty, {
-      bottom: this.layoutBounds.bottom - MARGIN,
+    // Pause/play/step buttons.
+    const timeControlNode = new TimeControlNode( model.isRunningProperty, {
+      bottom: this.layoutBounds.bottom - SoundConstants.CONTROL_PANEL_MARGIN,
       centerX: this.waveAreaNode.centerX,
-      //speedRadioButtonGroupOptions: {
-        //labelOptions: {
-        //  font: WaveInterferenceConstants.DEFAULT_FONT
-        //}
-      //},
+
       playPauseStepButtonOptions: {
         stepForwardButtonOptions: {
 
@@ -171,25 +172,19 @@ class SoundScreenView extends ScreenView {
         }
       }
     } );
-      this.addChild(timeControlNode);
-      this.addChild( resetAllButton );
-  }
 
-  /**
-   * Resets the view.
-   * @public
-   */
-  reset() {
-    //TODO
-  }
+    this.addChild(timeControlNode);
 
-  /**
-   * Steps the view.
-   * @param {number} dt - time step, in seconds
-   * @public
-   */
-  step( dt ) {
-    //TODO
+    const resetAllButton = new ResetAllButton( {
+      listener: () => {
+        this.interruptSubtreeInput(); // cancel interactions that may be in progress
+        model.reset();
+      },
+      right: this.layoutBounds.maxX - SoundConstants.SCREEN_VIEW_X_MARGIN,
+      bottom: this.layoutBounds.maxY - SoundConstants.SCREEN_VIEW_Y_MARGIN
+    } );
+
+    this.addChild( resetAllButton );
   }
 }
 

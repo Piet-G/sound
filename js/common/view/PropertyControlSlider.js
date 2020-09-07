@@ -1,30 +1,24 @@
 // Copyright 2018-2020, University of Colorado Boulder
 
 /**
- * Controls the amplitude for each Scene.
- *
- * @author Sam Reid (PhET Interactive Simulations)
+ * Slider that controls a given property, can display the current value and a title.
  */
 
-import Node from '../../../scenery/js/nodes/Node.js';
-import sound from '../sound.js';
-import WaveInterferenceUtils from '../../../wave-interference/js/common/WaveInterferenceUtils.js';
-import SoundSlider from '../common/view/SoundSlider.js';
-import Text from '../../../scenery/js/nodes/Text.js';
-import merge from '../../../phet-core/js/merge.js';
+import Node from '../../../../scenery/js/nodes/Node.js';
+import sound from '../../sound.js';
+import WaveInterferenceUtils from '../../../../wave-interference/js/common/WaveInterferenceUtils.js';
+import SoundSlider from '../../common/view/SoundSlider.js';
+import Text from '../../../../scenery/js/nodes/Text.js';
+import merge from '../../../../phet-core/js/merge.js';
 
 class ProtertyControlSlider extends Node {
-
-  /**
-   * @param {WavesModel} model
-   */
   constructor(titleText, property, options) {
     options = merge( {
       valueToText: null
     }, options);
 
     const title = new Text(titleText);
-    const valueDisplay = new Text('TEST');
+    const valueDisplay = new Text('');
     valueDisplay.top = title.bottom + 5;
 
     const sliderContainer =  new SoundSlider(property);

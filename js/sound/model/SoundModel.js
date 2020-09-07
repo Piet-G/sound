@@ -2,6 +2,7 @@
 
 /**
  * @author Piet Goris
+ * Base model for a sound scene.
  */
 
 import BooleanProperty from '../../../../axon/js/BooleanProperty.js';
@@ -9,9 +10,7 @@ import NumberProperty from '../../../../axon/js/NumberProperty.js';
 import Enumeration from '../../../../phet-core/js/Enumeration.js';
 import Rectangle from '../../../../dot/js/Rectangle.js';
 import ModelViewTransform2 from '../../../../phetcommon/js/view/ModelViewTransform2.js';
-
 import SoundConstants from '../../common/SoundConstants.js';
-import Tandem from '../../../../tandem/js/Tandem.js';
 import sound from '../../sound.js';
 import Bounds2 from '../../../../dot/js/Bounds2.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
@@ -19,65 +18,52 @@ import EventTimer from '../../../../phet-core/js/EventTimer.js';
 import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
 import Lattice from '../../../../wave-interference/js/common/model/Lattice.js';
 import TemporalMask from '../../common/model/TemporalMask.js';
-
-import validate from '../../../../axon/js/validate.js';
 import Range from '../../../../dot/js/Range.js';
 import merge from '../../../../phet-core/js/merge.js';
 
-const POSITIVE_NUMBER = {
-  valueType: 'number',
-  isValidValue: v => v > 0
-};
 
 // This simulation uses EventTimer, which provides exactly the same model behavior on very slow and very fast
 // platforms.  Here we define the frequency of events in Hz, which has been tuned so that our slowest platform has
 // an acceptable frame rate
 const eventTimerPeriod = 1 / SoundConstants.EVENT_RATE;
-const frequencyRange = new Range(0 / 1000,
-
-          // A4 in cycles per ms, wavelength is  78.4cm
-          1000 / 1000);
-const INITIAL_FREQUENCY = 500 / 1000;
+const frequencyRange = new Range(0, 1);
+const INITIAL_FREQUENCY = 0.5;
 
 class SoundModel {
-
-  /**
-   * @param {Tandem} tandem
-   */
-  constructor( tandem, config) {
+  constructor(config) {
     config = merge(
     {
         initialAmplitude: 5,
         speaker1PositionY: SoundConstants.WAVE_AREA_WIDTH / 2,
-        wallPositionX: null,
-        wallAngle: null
+        hasReflection: false,
+        hasSecondSource: false
     }, config);
 
     assert && assert(!config.hasAudioControlSettings || config.hasAudioControl);
-    assert && assert( tandem instanceof Tandem, 'invalid tandem' );
 
-    //this.waveSpeed = 34.3; // in cm/ms
+    // @public - whether this model has a second source.
+    this.hasSecondSource = config.hasSecondSource;
+
+    // @public - whether this model has a reflection wall.
+    this.hasReflection = config.hasReflection;
     
+    // @public - propery that shows if the simulation in running.
     this.isRunningProperty = new BooleanProperty( true );
+
+    // @public - propery that shows that a pulse is firing.
     this.isPulseFiringProperty = new BooleanProperty(false);
 
-    this.sourcePositionX = 40;
-
+    // @public - phase of the sound wave.
     this.phase = 0;
 
-    //this.scenes = [this];
-
+    // @public - number of steps since launch of the simulation.
     this.stepIndex = 0;
 
     // @private
-    this.temporalMask1 = new TemporalMask(this.wallPositionXProperty, this.wallAngleProperty);
-
-    // @private
-    this.temporalMask2 = new TemporalMask(this.wallPositionXProperty, this.wallAngleProperty);
+    this.temporalMask = new TemporalMask(this.wallPositionXProperty, this.wallAngleProperty);
 
     // @public (read-only) - the value of the wave at the oscillation point
     this.oscillatorProperty = new NumberProperty( 0 );
-
 
     const eventTimerModel = {
       // @public
@@ -85,6 +71,7 @@ class SoundModel {
         return eventTimerPeriod;
       }
     };
+
     // @private - In order to have exactly the same model behavior on very fast and very slow platforms, we use
     // EventTimer, which updates the model at regular intervals, and we can interpolate between states for additional
     // fidelity.
@@ -120,7 +107,7 @@ class SoundModel {
     this.frequencyProperty.lazyLink( phaseUpdate );
 
     // @public - controls the amplitude of the wave.
-    this.amplitudeProperty = new NumberProperty( validate( config.initialAmplitude, POSITIVE_NUMBER ) , {
+    this.amplitudeProperty = new NumberProperty( config.initialAmplitude , {
       range: SoundConstants.AMPLITUDE_RANGE
     } );
 
@@ -135,14 +122,6 @@ class SoundModel {
       SoundConstants.LATTICE_PADDING
     );
 
-    // @public - the grid that contains the wave values of the second speaker
-    this.lattice2 = new Lattice(
-      SoundConstants.LATTICE_DIMENSION,
-      SoundConstants.LATTICE_DIMENSION,
-      SoundConstants.LATTICE_PADDING,
-      SoundConstants.LATTICE_PADDING
-    );
-
     this.modelToLatticeTransform = ModelViewTransform2.createRectangleMapping(
       new Rectangle( 0, 0, SoundConstants.WAVE_AREA_WIDTH, SoundConstants.WAVE_AREA_WIDTH ),
       this.lattice.visibleBounds
@@ -151,7 +130,8 @@ class SoundModel {
     this.modelViewTransform = null;
     this.latticeToViewTransform = null;
 
-    this.speaker1Position = new Vector2(this.modelToLatticeTransform.viewToModelX(this.sourcePositionX), config.speaker1PositionY);
+    // @public (read-only) - position of the non-moving first speaker.
+    this.speaker1Position = new Vector2(this.modelToLatticeTransform.viewToModelX(SoundConstants.SOURCE_POSITION_X), config.speaker1PositionY);
   }
 
   /**
@@ -192,14 +172,10 @@ class SoundModel {
     const frequency = this.frequencyProperty.get();
     const period = 1 / frequency;
     const timeSincePulseStarted = time - this.pulseStartTime;
-    //const lattice = this.lattice;
-    //const lattice2 = this.lattice2;
-    //const combinedLattice = this.combinedLattice;
     const isContinuous = ( !this.soundModeProperty || this.soundModeProperty.get() === SoundModel.SoundModeOptions.CONTINUOUS );
 
     // Used to compute whether a delta appears in either mask
-    let temporalMask1Empty = true;
-    let temporalMask2Empty = true;
+    let temporalMaskEmpty = true;
 
     // If the pulse is running, end the pulse after one period
     if ( this.isPulseFiringProperty.get() ) {
@@ -216,8 +192,9 @@ class SoundModel {
       // The simulation is designed to start with a downward wave, corresponding to water splashing in
       const angularFrequency = Math.PI * 2 * frequency;
 
+      // Value to be multiplied with the final wave value.
       const dampingByPressure = this.pressureProperty ? this.pressureProperty.value : 1;
-      //console.log(dampingByPressure);
+
       // Compute the wave value as a function of time, or set to zero if no longer generating a wave.
       const waveValue = ( this.isPulseFiringProperty.get() && timeSincePulseStarted > period ) ? 0 :
                         -Math.sin( time * angularFrequency + this.phase ) * amplitude *
@@ -227,32 +204,16 @@ class SoundModel {
       if ( isContinuous|| this.isPulseFiringProperty.get() ) {
 
         const j = Math.floor(this.modelToLatticeTransform.modelToViewY( this.speaker1Position.y ));
-        this.lattice.setCurrentValue( this.sourcePositionX, j, waveValue );
-        //combinedLattice.setCurrentValue(WaveInterferenceConstants.POINT_SOURCE_HORIZONTAL_COORDINATE, j, 0, waveValue );
+        this.lattice.setCurrentValue( SoundConstants.SOURCE_POSITION_X, j, waveValue );
         this.oscillatorProperty.value = waveValue;
         if ( amplitude > 0 ) {
-          this.temporalMask1.set( true, this.stepIndex,  j );
-          temporalMask1Empty = false;
-        }
-      }
-
-      // Secondary source (note if there is only one source, this sets the same value as above)
-      if ( isContinuous && this.speaker2PositionProperty ) {
-        const x = Math.floor(this.modelToLatticeTransform.modelToViewX( this.speaker2PositionProperty.get().x));
-        const j = Math.floor(this.modelToLatticeTransform.modelToViewY( this.speaker2PositionProperty.get().y ));
-        this.lattice2.setCurrentValue(x , j, waveValue );
-        //combinedLattice.setCurrentValue(WaveInterferenceConstants.POINT_SOURCE_HORIZONTAL_COORDINATE, j, 1, waveValue );
-
-        //this.oscillatorProperty.value = waveValue;
-        if ( amplitude > 0 ) {
-          amplitude > 0 && this.temporalMask2.set( true, this.stepIndex, j );
-          temporalMask2Empty = false;
+          this.temporalMask.set( true, this.stepIndex,  j );
+          temporalMaskEmpty = false;
         }
       }
     }
 
-    temporalMask1Empty && this.temporalMask1.set( false, this.stepIndex, 0 );
-    temporalMask2Empty && this.temporalMask2.set( false, this.stepIndex, 0 );
+    temporalMaskEmpty && this.temporalMask.set( false, this.stepIndex, 0 );
   }
   
   /**
@@ -288,20 +249,11 @@ class SoundModel {
     this.frequencyProperty.reset();
     this.amplitudeProperty.reset();
     this.timeProperty.reset();
-    
-    if(this.soundModeProperty){
-      this.soundModeProperty.reset();
-    }
+    this.oscillatorProperty.reset();
 
-    if(this.audioControlSettingProperty){
-      this.audioControlSettingProperty.reset();
-    }
-    if(this.isAudioEnabledProperty){
-      this.isAudioEnabledProperty.reset();
-    }
-    if(this.stopwatch){
-      this.stopwatch.reset();
-    }
+    this.phase = 0;
+    this.stepIndex = 0;
+    this.lattice.clear();
   }
 
   /**
@@ -310,7 +262,6 @@ class SoundModel {
    */
   clearWaves() {
     this.lattice.clear();
-    this.lattice2.clear();
   }
 
   /**
@@ -337,20 +288,15 @@ class SoundModel {
     for ( let i = 0; i < this.lattice.width; i++ ) {
       for ( let j = 0; j < this.lattice.height; j++ ) {
 
-        const cameFrom1 = this.temporalMask1.matches(this.sourcePositionX, i, j, this.stepIndex );
-        if(this.speaker2PositionProperty){
-          const cameFrom2 = this.temporalMask2.matches(this.modelToLatticeTransform.modelToViewX(this.speaker2PositionProperty.value.x), i, j, this.stepIndex );
-                  this.lattice2.setAllowed(i , j, cameFrom2);
+        const distanceWithinBounds = this.temporalMask.matches(SoundConstants.SOURCE_POSITION_X, i, j, this.stepIndex ) >= 0;
 
-        }
-        this.lattice.setAllowed(i, j, cameFrom1 );
+        this.lattice.setAllowed(i, j, distanceWithinBounds );
       }
     }
 
     // Prune entries.  Elements that are too far out of range are eliminated.  Use the diagonal of the lattice for the
     // max distance
-    this.temporalMask1.prune( Math.sqrt( 2 ) * this.lattice.width, this.stepIndex );
-    this.temporalMask2.prune( Math.sqrt( 2 ) * this.lattice.width, this.stepIndex );
+    this.temporalMask.prune( Math.sqrt( 2 ) * this.lattice.width, this.stepIndex );
   }
 
   /**
@@ -361,27 +307,18 @@ class SoundModel {
    */
   advanceTime(dt, manualStep ) {
     if ( this.isRunningProperty.get() || manualStep ) {
-      const correction = 2.4187847116091334 * 1000 / 500;
- //2.4187847116091334 * 2
+      const correction = 2.4187847116091334 * SoundConstants.WAVE_AREA_WIDTH / 500;
+
       if(this.stopwatch){
-        //(this.waveSpeed) / this.modelToLatticeTransform.viewToModelDeltaX(0.2);
-        console.log(dt * correction);
         this.stopwatch.step( dt * correction);
       }
-        // Notify listeners that a frame has advanced
-        //this.stepEmitter.emit();
-      //console.log(dt);
-      this.lattice.interpolationRatio = this.eventTimer.getRatio();
-      this.lattice2.interpolationRatio = this.eventTimer.getRatio();
 
-      //this.sceneProperty.value.advanceTime( wallDT, manualStep );
+      this.lattice.interpolationRatio = this.eventTimer.getRatio();
 
       this.timeProperty.value += dt * correction;
 
       // Update the lattice
       this.lattice.step();
-      this.lattice2.step();
-      //this.combinedLattice.step();
 
       // Apply values on top of the computed lattice values so there is no noise at the point sources
       this.generateWaves();
@@ -390,15 +327,8 @@ class SoundModel {
 
       // Notify listeners about changes
       this.lattice.changedEmitter.emit();
-      this.lattice2.changedEmitter.emit();
 
       this.stepIndex++;
-
-      //this.combinedLattice.changedEmitter.emit();
-      // Notify listeners that a frame has advanced
-      //this.stepEmitter.emit();
-      //this.sceneProperty.value.lattice.interpolationRatio = this.eventTimer.getRatio();
-      //this.sceneProperty.value.advanceTime( dt, manualStep );
     }
   }
 }

@@ -12,8 +12,6 @@ import sound from '../sound.js';
 const SoundColors = {
 
   SCREEN_VIEW_BACKGROUND: new Property( 'white' )
-
-  //TODO
 };
 
 sound.register( 'SoundColors', SoundColors );

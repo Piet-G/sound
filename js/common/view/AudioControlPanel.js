@@ -1,43 +1,47 @@
 // Copyright 2018-2020, University of Colorado Boulder
 
 /**
- * Shows the main controls, including frequency/wavelength and amplitude.
- *
- * @author Sam Reid (PhET Interactive Simulations)
+ * Shows the controls of the audio, wheter the audio is enabled and if the source is sampled at the source or at the listener.
  */
 
-import Node from '../../../scenery/js/nodes/Node.js';
-import Text from '../../../scenery/js/nodes/Text.js';
-import VerticalAquaRadioButtonGroup from '../../../sun/js/VerticalAquaRadioButtonGroup.js';
-import soundStrings from '../soundStrings.js';
-import sound from '../sound.js';
-import WaveInterferenceConstants from '../../../wave-interference/js/common/WaveInterferenceConstants.js';
-import WaveInterferencePanel from '../../../wave-interference/js/common/view/WaveInterferencePanel.js';
-import Checkbox from '../../../sun/js/Checkbox.js';
-import SoundModel from '../sound/model/SoundModel.js';
+import Node from '../../../../scenery/js/nodes/Node.js';
+import Text from '../../../../scenery/js/nodes/Text.js';
+import VerticalAquaRadioButtonGroup from '../../../../sun/js/VerticalAquaRadioButtonGroup.js';
+import soundStrings from '../../soundStrings.js';
+import sound from '../../sound.js';
+import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
+import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
+import Checkbox from '../../../../sun/js/Checkbox.js';
+import SoundModel from '../../sound/model/SoundModel.js';
+import SoundConstants from '../../common/SoundConstants.js';
+import merge from '../../../../phet-core/js/merge.js';
 
 const titleString = soundStrings.audioControlPanel.title;
 const audioEnabledString = soundStrings.audioControlPanel.audioEnabled;
 const speakerAudioString = soundStrings.audioControlPanel.speaker;
 const listenerAudioString = soundStrings.audioControlPanel.listener;
-const SPACING = 7;
 
 class AudioControlPanel extends WaveInterferencePanel {
 
   /**
    * @param {SoundModel} model
    * @param {AlignGroup} alignGroup
+   * @param {Object} [options]
    */
-  constructor( model, alignGroup) {
+  constructor( model, alignGroup, options) {
+    options = merge({
+      maxWidth: WaveInterferenceConstants.PANEL_MAX_WIDTH,
+      yMargin: 4
+    }, options);
+
     const boxText = new Text(titleString);
     const graphCheckbox = new Checkbox(
       new Text(audioEnabledString, WaveInterferenceConstants.CONTROL_PANEL_TEXT_MAX_WIDTH_OPTIONS ),
       model.isAudioEnabledProperty, {
         boxWidth: 15
-        // Set size to the same as that of the radiobuttons.
       });
 
-    graphCheckbox.top = boxText.bottom + SPACING;
+    graphCheckbox.top = boxText.bottom + SoundConstants.CONTROL_PANEL_SPACING;
 
     let radioButtons;
     if(model.audioControlSettingProperty){
@@ -48,10 +52,10 @@ class AudioControlPanel extends WaveInterferencePanel {
         node: new Text(listenerAudioString, WaveInterferenceConstants.CONTROL_PANEL_TEXT_MAX_WIDTH_OPTIONS ),
         value: SoundModel.AudioControlOptions.LISTENER
       }], {
-        spacing: 4
+        spacing: options.yMargin
       } );
 
-      radioButtons.top = graphCheckbox.bottom + SPACING;
+      radioButtons.top = graphCheckbox.bottom + SoundConstants.CONTROL_PANEL_SPACING;
     }
     
 
@@ -66,10 +70,7 @@ class AudioControlPanel extends WaveInterferencePanel {
     const content = alignGroup.createBox( container );
     content.setXAlign('left');
 
-    super( content, {
-      maxWidth: WaveInterferenceConstants.PANEL_MAX_WIDTH,
-      yMargin: 4
-    });
+    super( content, options);
   }
 }
 

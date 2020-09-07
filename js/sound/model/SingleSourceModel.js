@@ -2,11 +2,11 @@
 
 /**
  * @author Piet Goris
+ * Model for the single source scene.
  */
 
 import SoundModel from './SoundModel.js';
 import Property from '../../../../axon/js/Property.js';
-import Tandem from '../../../../tandem/js/Tandem.js';
 import sound from '../../sound.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
 import BooleanProperty from '../../../../axon/js/BooleanProperty.js';
@@ -15,7 +15,7 @@ import SoundConstants from '../../common/SoundConstants.js';
 
 class SingleSourceModel extends SoundModel {
   constructor() {
-    super(Tandem.ROOT.createTandem('model'), {});
+    super();
 
     // @public - whether audio is enabled
     this.isAudioEnabledProperty = new BooleanProperty( false );
@@ -28,6 +28,18 @@ class SingleSourceModel extends SoundModel {
     // @public - position of the listener
     this.listenerPositionProperty = new Vector2Property(new Vector2(1/2 * SoundConstants.WAVE_AREA_WIDTH, SoundConstants.WAVE_AREA_WIDTH / 2));
 
+  }
+
+  /**
+   * Resets the model.
+   * @public
+   */
+  reset() {
+    super.reset();
+
+    this.isAudioEnabledProperty.reset();
+    this.audioControlSettingProperty.reset();
+    this.listenerPositionProperty.reset();
   }
 }
 

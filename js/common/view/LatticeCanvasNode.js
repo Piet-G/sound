@@ -2,8 +2,7 @@
 
 /**
  * Renders the main area of the lattice (doesn't include the damping regions) using 2d canvas.
- *
- * @author Sam Reid (PhET Interactive Simulations)
+ * Allows for wall reflection and an extra source. Also can dampen the waves to be within a certain area.
  */
 
 import Utils from '../../../../dot/js/Utils.js';
@@ -12,6 +11,7 @@ import merge from '../../../../phet-core/js/merge.js';
 import CanvasNode from '../../../../scenery/js/nodes/CanvasNode.js';
 import Color from '../../../../scenery/js/util/Color.js';
 import sound from '../../sound.js';
+import SoundConstants from '../../common/SoundConstants.js';
 import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
 import WaveInterferenceUtils from '../../../../wave-interference/js/common/WaveInterferenceUtils.js';
 import ImageDataRenderer from '../../../../wave-interference/js/common/view/ImageDataRenderer.js';
@@ -25,7 +25,7 @@ class LatticeCanvasNode extends CanvasNode {
    * @param {Lattice} lattice
    * @param {Object} [options]
    */
-  constructor( lattice, lattice2, options) {
+  constructor( lattice, options) {
 
     options = merge( {
 
@@ -33,25 +33,33 @@ class LatticeCanvasNode extends CanvasNode {
       canvasBounds: WaveInterferenceUtils.getCanvasBounds( lattice ),
       layerSplit: true, // ensure we're on our own layer
       baseColor: Color.blue,
-      reflection: false
+      hasReflection: false,
+      sourcePosition: new Vector2(0,0),
+      hasSecondSource: false,
+      source2PositionY: 0,
+      wallAngle: Math.PI/4
 
     }, options );
 
     super( options );
 
     // @private
-    this.reflection = options.reflection;
+    this.hasSecondSource = options.hasSecondSource;
+    // @public
+    this.source2PositionY = options.source2PositionY;
+    // @private
+    this.sourcePosition = options.sourcePosition;
+    // @private
+    this.hasReflection = options.hasReflection;
 
     // @private
     this.lattice = lattice;
-
-    this.lattice2 = lattice2;
 
     // @private
     this.wallPositionX = this.lattice.width / 2;
 
     // @private
-    this.wallAngle = Math.PI/4;
+    this.wallAngle = options.wallAngle;
 
     // @private
     this.baseColor = options.baseColor;
@@ -88,8 +96,6 @@ class LatticeCanvasNode extends CanvasNode {
 
   setWallPositionX(x) {
     this.wallPositionX = x;
-
-    console.log("SET" + x)
   }
 
   /**
@@ -113,6 +119,17 @@ class LatticeCanvasNode extends CanvasNode {
   }
 
   /**
+  * Gets dampened lattice value
+  * @public
+  */
+  getDampenedValue(x,y ) {
+    const distance = this.sourcePosition.distanceXY(x, y);
+    const distanceDampen = distance >= 0 && distance <= SoundConstants.MAX_SOUND_DISTANCE ? (SoundConstants.MAX_SOUND_DISTANCE - distance) / SoundConstants.MAX_SOUND_DISTANCE : 0;
+
+    return this.lattice.getInterpolatedValue(x, y) * distanceDampen;
+  }
+
+  /**
    * Draws into the canvas.
    * @param {CanvasRenderingContext2D} context
    * @public
@@ -127,9 +144,6 @@ class LatticeCanvasNode extends CanvasNode {
     const height = this.lattice.height;
     let intensity;
 
-    //const halfWidth = Utils.roundSymmetric(this.lattice.width / 2);
-    const halfWidth = Utils.roundSymmetric(this.wallPositionX);
-    //console.log(halfWidth);
     for ( let i = dampX; i < width - dampX; i++ ) {
       for ( let k = dampY; k < height - dampY; k++ ) {
 
@@ -138,39 +152,33 @@ class LatticeCanvasNode extends CanvasNode {
         let addition = 0;
         let zeroOut = 1;
 
-        if(this.reflection){
-          //console.log(halfWidth)
-
-          if(k < Utils.roundSymmetric(this.wallPositionX) - (i - height + dampY) / Math.tan(this.wallAngle)){
-            //addition = 10;
-
+        if(this.hasReflection){
+          if(k >= this.sourcePosition.x && k < Utils.roundSymmetric(this.wallPositionX) - (i - height + dampY) / Math.tan(this.wallAngle)){
             const originalPos = new Vector2(k, i);
             const wallVector = Vector2.createPolar(1, -this.wallAngle);
             const wallOrigin = new Vector2(this.wallPositionX, height - dampY);
             const mirroredPosition = wallVector.withMagnitude(originalPos.copy().minus(wallOrigin).dot(wallVector)).plus(wallOrigin);
             const perp = mirroredPosition.minus(originalPos).times(2);
             const final = originalPos.plus(perp);
-            //console.log(final);
-            addition = this.lattice.getInterpolatedValue( Utils.roundSymmetric(final.x), Utils.roundSymmetric(final.y) );
+            const finalX = Utils.roundSymmetric(final.x);
+            const finalY = Utils.roundSymmetric(final.y);
+
+            addition = this.getDampenedValue(finalX, finalY);
           }
           else{
             zeroOut = 0;
           }
-
-          if(k < 50){
-            zeroOut = 0;
-          }
         }
-        const extra = this.lattice2 ? this.lattice2.getInterpolatedValue( k, i ) : 0;
-        const waveValue = (this.lattice.getInterpolatedValue( k, i ) + extra + addition / 2) * zeroOut;
-       //const waveValue = i / 100;
+
+        if(this.hasSecondSource){
+          addition = this.getDampenedValue(k, Utils.roundSymmetric(i + this.sourcePosition.y - this.source2PositionY));
+        }
+
+        const waveValue = (this.getDampenedValue(k, i) + addition) * zeroOut;
 
         if ( waveValue > 0 ) {
           intensity = Utils.linear( 0, 2, CUTOFF, 1, waveValue );
           intensity = Utils.clamp( intensity, CUTOFF, 1 );
-
-          //console.log("paining")
-
         }
         else {
           const MIN_SHADE = 0.03; // Stop before 0 because 0 is too jarring

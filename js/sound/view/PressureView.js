@@ -2,46 +2,37 @@
 
 /**
  * @author Piet Goris
+ * View for the pressure screen.
  */
 
 import SoundScreenView from './SoundScreenView.js';
-import Tandem from '../../../../tandem/js/Tandem.js';
 import sound from '../../sound.js';
-import Bounds2 from '../../../../dot/js/Bounds2.js';
-import SingleSourceModel from '../model/SingleSourceModel.js';
+import PressureModel from '../model/PressureModel.js';
 import Image from '../../../../scenery/js/nodes/Image.js';
-
 import listenerImage from '../../../images/girl_png.js';
-import MovableNode from '../../common/view/MovableNode.js';
-import Vector2 from '../../../../dot/js/Vector2.js';
 import SoundConstants from '../../common/SoundConstants.js';
-import Rectangle from '../../../../scenery/js/nodes/Rectangle.js';
-import AirDensityControlPanel from '../../common/AirDensityControlPanel.js';
-import Color from '../../../../scenery/js/util/Color.js';
+import AirDensityControlPanel from '../../common/view/AirDensityControlPanel.js';
 
-class SingleSourceView extends SoundScreenView {
+class PressureView extends SoundScreenView {
   constructor(model) {
-    assert && assert( model instanceof SingleSourceModel, 'invalid model' );
-    super(model, Tandem.ROOT.createTandem('model'));
+    assert && assert( model instanceof PressureModel, 'invalid model' );
+    super(model);
 
-    const center = model.modelViewTransform.modelToViewPosition(model.listenerPosition);
-	this.listener = new Image(listenerImage);
-	this.listener.setCenter(center);
-	this.addChild(this.listener);
-
-
-
-	this.pressureControlPanel = new AirDensityControlPanel(model, this.contolPanelAlignGroup);
-	const updateAirDensistyPanelPosition = () => {
-		this.pressureControlPanel.mutate( {
-          right: this.layoutBounds.right - 8,
-          top: this.audioControlPanel.bottom + 7
-        } );
-      };
-      updateAirDensistyPanelPosition();
-     this.addChild(this.pressureControlPanel);
+    const center = model.modelViewTransform.modelToViewPosition(model.listenerPositionProperty.value);
+    this.listener = new Image(listenerImage);
+    this.listener.setCenter(center);
+    this.addChild(this.listener);
+    
+    this.pressureControlPanel = new AirDensityControlPanel(model, this.contolPanelAlignGroup);
+    
+    this.pressureControlPanel.mutate( {
+      right: this.layoutBounds.right - SoundConstants.CONTROL_PANEL_MARGIN,
+      top: this.audioControlPanel.bottom + SoundConstants.CONTROL_PANEL_SPACING
+    } );
+    
+    this.addChild(this.pressureControlPanel);
   }
 }
 
-sound.register( 'SingleSourceView', SingleSourceView );
-export default SingleSourceView;
+sound.register( 'PressureView', PressureView );
+export default PressureView;

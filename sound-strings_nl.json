@@ -1,6 +1,6 @@
 {
   "sound.title": {
-    "value": "Sound"
+    "value": "TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST"
   },
   "singleSource.title": {
   	"value": "Listen to a Single Source"
@@ -32,12 +32,6 @@
   "reflection.title": {
   	"value": "Interference by Reflection"
   },
-  "atm": {
-	 "value": "ATM"
-  },
-  "hz": {
-    "value": "Hz"
-  },
   "airPressure.title": {
   	"value": "Listen with Varying Air Pressure"
   },
@@ -64,12 +58,6 @@
   },
   "soundModeControlPanel.firePulse": {
     "value": "Fire Pulse"
-  },
-  "reflectionControlPanel.positionSlider": {
-    "value": "Wall Position"
-  },
-  "reflectionControlPanel.rotationSlider": {
-    "value": "Wall Angle"
   },
   "airDensityControlPanel.title": {
     "value": "Air Density"

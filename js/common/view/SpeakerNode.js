@@ -1,9 +1,7 @@
 // Copyright 2018-2020, University of Colorado Boulder
 
 /**
- * Shows the main controls, including frequency/wavelength and amplitude.
- *
- * @author Sam Reid (PhET Interactive Simulations)
+ * Node for the speaker, oscillates with the values of the oscillatorProperty.
  */
 
 import Node from '../../../../scenery/js/nodes/Node.js';
@@ -60,25 +58,16 @@ const speakers = [
 
 
 class SpeakerNode extends Node {
-  /**
-   * @param {SoundModel} model
-   * @param {AlignGroup} alignGroup
-   */
   constructor(oscillatorProperty) {
     super();
-        // interactivity
 
     const image = new Image( speakerImageMID, {
-      //rightCenter: 20,
       scale: 0.75
     } );
-
-    this.test = speakers;
 
     this.children = [image];
 
     oscillatorProperty.link( value => {
-
       const max = SoundConstants.AMPLITUDE_RANGE.max * SoundConstants.AMPLITUDE_CALIBRATION_SCALE;
 
       // Sign is chosen so that the membrane forward corresponds to a high pressure outside the speaker,

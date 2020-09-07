@@ -3,19 +3,18 @@
 /**
  * Shows the main controls, including frequency/wavelength and amplitude.
  *
- * @author Sam Reid (PhET Interactive Simulations)
  */
 
-import Node from '../../../scenery/js/nodes/Node.js';
-import Text from '../../../scenery/js/nodes/Text.js';import soundStrings from '../soundStrings.js';
-import sound from '../sound.js';
-import WaveInterferenceConstants from '../../../wave-interference/js/common/WaveInterferenceConstants.js';
-import WaveInterferencePanel from '../../../wave-interference/js/common/view/WaveInterferencePanel.js';
-import RectangularPushButton from '../../../sun/js/buttons/RectangularPushButton.js';
-//import SoundModel from '../sound/model/SoundModel.js';
+import Node from '../../../../scenery/js/nodes/Node.js';
+import Text from '../../../../scenery/js/nodes/Text.js';
+import soundStrings from '../../soundStrings.js';
+import sound from '../../sound.js';
+import WaveInterferenceConstants from '../../../../wave-interference/js/common/WaveInterferenceConstants.js';
+import WaveInterferencePanel from '../../../../wave-interference/js/common/view/WaveInterferencePanel.js';
+import RectangularPushButton from '../../../../sun/js/buttons/RectangularPushButton.js';
 import PropertyControlSlider from './PropertyControlSlider.js';
 
-const titleString = soundStrings.airDensityControlPanel.title;
+//const titleString = soundStrings.airDensityControlPanel.title;
 //const removeAirString = soundStrings.airDensityControlPanel.removeAir;
 //const addAirString = soundStrings.airDensityControlPanel.addAir;
 const resetString = soundStrings.airDensityControlPanel.reset;
@@ -27,7 +26,7 @@ class AirDensityControlPanel extends WaveInterferencePanel {
    * @param {AlignGroup} alignGroup
    */
   constructor( model, alignGroup) {
-    const boxText = new Text(titleString);
+    //const boxText = new Text(titleString);
 
     const container = new Node();
 
@@ -38,7 +37,7 @@ class AirDensityControlPanel extends WaveInterferencePanel {
       }
     });
 
-    const airPressureContol = new PropertyControlSlider( "Air Pressure", model.pressureProperty);
+    const airPressureContol = new PropertyControlSlider( 'Air Pressure', model.pressureProperty);
 
     container.children = [
     //    boxText,
@@ -46,11 +45,10 @@ class AirDensityControlPanel extends WaveInterferencePanel {
         resetButton
       ];
 
-    //airPressureContol.top = boxText.bottom + 4;
     resetButton.top = airPressureContol.bottom + 4;
 
     const content = alignGroup.createBox( container );
-    content.setXAlign('left');
+    content.setXAlign('center');
 
     super( content, {
       maxWidth: WaveInterferenceConstants.PANEL_MAX_WIDTH,

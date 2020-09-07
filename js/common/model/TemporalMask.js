@@ -5,24 +5,23 @@
  * on the lattice at a later time.  This is used to prevent artifacts when the wave is turned off, and to restore
  * the lattice to black (for light), see https://github.com/phetsims/wave-interference/issues/258
  *
- * @author Sam Reid (PhET Interactive Simulations)
  */
 
 import sound from '../../sound.js';
 import Lattice from '../../../../wave-interference/js/common/model/Lattice.js';
-import Vector2 from '../../../../dot/js/Vector2.js';
+import SoundConstants from '../../common/SoundConstants.js';
+
 
 class TemporalMask {
 
-  constructor(wallPositionXProperty, wallAngleProperty, reflected, transformModel) {
+  constructor(wallPositionXProperty, wallAngleProperty, transformModel) {
+    // @private - x coordinate of the origin position of the wall if present.
     this.wallPositionXProperty = wallPositionXProperty;
-    this.wallAngleProperty = wallAngleProperty;
-    this.reflected = reflected;
-    this.transformModel = transformModel;
 
-    if(transformModel){
-      console.log("TEMP: " + this.transformModel.modelToViewX(1600));
-    }
+    // @private- angle of the wall if present.
+    this.wallAngleProperty = wallAngleProperty;
+
+    this.transformModel = transformModel;
 
     // @private - record of {isSourceOn: boolean, numberOfSteps: number, verticalLatticeCoordinate: number} of changes in wave disturbance sources.
     this.deltas = [];
@@ -51,6 +50,7 @@ class TemporalMask {
 
   /**
    * Determines if the wave source was turned on at a time that contributed to the cell value
+   * @param {number} horizontalSourceX - horizontal coordinate of the source
    * @param {number} horizontalLatticeCoordinate - horizontal coordinate on the lattice (i)
    * @param {number} verticalLatticeCoordinate - vertical coordinate on the lattice (j)
    * @param {number} numberOfSteps - integer number of times the wave has been stepped on the lattice
@@ -74,10 +74,6 @@ class TemporalMask {
 
         const theoreticalTime = numberOfSteps - distance / ( Lattice.WAVE_SPEED) ;
 
-        const tempVec = this.reflected ? new Vector2(horizontalDelta, verticalDelta).rotate(2 * this.wallAngleProperty.value) : null;
-
-        const insideCone = this.reflected ? Math.abs(Math.atan((tempVec.y) / (tempVec.x) ) )  <= Math.PI / 3: Math.abs(Math.atan(verticalDelta / horizontalDelta)) <= Math.PI/3;
-
         // if theoreticalDistance matches any time in this range, the cell's value was caused by the oscillators, and
         // not by a reflection or numerical artifact.  The tolerance is necessary because the actual group velocity
         // of the tip exceeds the theoretical speed, and the group velocity at the tail is lower than the theoretical
@@ -85,47 +81,16 @@ class TemporalMask {
         const headTolerance = 2;
         const tailTolerance = 4;
 
-        //if(this.reflected){
-        //  if(insideCone){
-            //console.log("SSSSS")
-        //    return true;
-        //  }
-        //  else{
-            //console.log("ZWOOPPPP")
-            //return false;
-        //  }
-        //}
-        //  else{
-        //    return false;
-        //  }
-          //return true;
-        //}
 
-        const notBack = this.reflected ? true : horizontalDelta < 0;
-
-        const beforeWall = this.wallPositionXProperty ? horizontalLatticeCoordinate < this.transformModel.modelToViewX(this.wallPositionXProperty.value) + (verticalLatticeCoordinate - 131) / Math.tan(-this.wallAngleProperty.value) : true;
-
-        if (notBack  && ((theoreticalTime >= startTime - headTolerance && theoreticalTime <= endTime + tailTolerance) || false) && insideCone && beforeWall) {
+        if (horizontalDelta <= 0 && theoreticalTime >= startTime - headTolerance && theoreticalTime <= endTime + tailTolerance && Math.abs(Math.atan(verticalDelta / horizontalDelta)) <= SoundConstants.CONE_ANGLE && (this.wallPositionXProperty ? horizontalLatticeCoordinate < this.transformModel.modelToViewX(this.wallPositionXProperty.value) + (verticalLatticeCoordinate - SoundConstants.LATTICE_DIMENSION + SoundConstants.LATTICE_PADDING) / Math.tan(-this.wallAngleProperty.value) : true)) {
 
           // Return as early as possible to improve performance
-          return true;
+          return distance;
         }
-
-        /**if(this.wallPositionXProperty && this.wallAngleProperty){
-
-          if(horizontalDelta < 10){
-            return true;
-          }
-          //console.log(horizontalDelta)
-          //console.log(verticalDelta / Math.tan(this.wallAngleProperty.value) + this.wallPositionXProperty.value);
-          if(horizontalDelta > verticalDelta / Math.tan(this.wallAngleProperty.value) + this.wallPositionXProperty.value){
-            return true;
-          }
-        }**/
       }
     }
 
-    return false;
+    return -1;
   }
 
   /**
